@@ -129,7 +129,12 @@ export const HeaderComponent: React.FC<SparklesTextProps> = ({
   }, [colors.first, colors.second, sparklesCount]);
 
   return (
-    <div
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    whileInView={{opacity:1}}
+    
+    transition={{ delay: 0.7, duration: 1 }}
       className={cn("text-4xl font-bold", className)}
       {...props}
       style={
@@ -145,6 +150,6 @@ export const HeaderComponent: React.FC<SparklesTextProps> = ({
         ))}
         <strong>{text}</strong>
       </span>
-    </div>
+    </motion.div>
   );
 };
