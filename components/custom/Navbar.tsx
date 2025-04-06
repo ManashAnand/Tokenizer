@@ -36,7 +36,7 @@ const Navbar = () => {
         className=' flex w-full justify-between rounded-md bg-white/30 backdrop-blur-md min-h-12 items-center text-white
     px-4 mt-4
 '>
-            <div className=' flex-1 md:min-w-0 flex text-2xl gap-2  items-center'><TowerControl className=''/> Tokenizer</div>
+            <div className=' flex-1 md:min-w-0 flex text-md md:text-2xl gap-2  items-center'><TowerControl className=''/> Tokenizer</div>
             <div className='flex md:gap-4 text-xs min-w-3/4 md:min-w-0 justify-end '>
                 {
                     routes?.map((navItem, index) => {
