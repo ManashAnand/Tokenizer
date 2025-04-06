@@ -41,7 +41,23 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+ 
 }
+
+@theme {
+  --animate-rotate: "rotate 10s linear infinite";
+
+   @keyframes rotate{
+      from {
+        transform: "rotate(0deg) scale(10)"
+      }
+       to {
+        transform: "rotate(-360deg) scale(10)"
+      }
+  }
+}
+
 
 :root {
   --radius: 0.625rem;
@@ -116,6 +132,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

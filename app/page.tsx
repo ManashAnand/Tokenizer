@@ -1,15 +1,33 @@
 "use client";
 
-import Image from "next/image";
-
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-
+import { motion } from "motion/react";
+import { CircleDot } from "lucide-react";
+import FirstLook from "@/components/custom/FirstLook";
 export default function Home() {
+
   return (
-    <main className="flex items-center justify-center min-h-screen">
-    <div className="border hover:border-slate-900 rounded">
-      <WalletMultiButton style={{}} />
-    </div>
-  </main>
+    <>
+
+      <div
+        className="w-full flex justify-center items-center  mt-4 font-semibold text-white/60 text-md ">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7, duration: 1 }}
+          className="flex flex-col gap-8 justify-center items-center"
+        >
+
+          <div
+            className=" flex gap-2">
+            <span className="animate-pulse">
+              <CircleDot/>
+              </span>
+               Have fun minting your own token
+          </div>
+
+        </motion.div>
+      </div>
+          <FirstLook/>
+    </>
   );
 }
