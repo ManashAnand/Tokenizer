@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { CircleDot } from "lucide-react";
 import FirstLook from "@/components/custom/FirstLook";
+import { FeaturesSection } from "../components/custom/FeatureSection";
 export default function Home() {
 
   return (
@@ -28,6 +29,7 @@ export default function Home() {
         </motion.div>
       </div>
           <FirstLook/>
+          <FeaturesSection/>
     </>
   );
 }

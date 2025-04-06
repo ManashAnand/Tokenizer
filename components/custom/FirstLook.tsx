@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, StarsIcon } from 'lucide-react'
+import { ArrowRight, BrainCircuit, StarsIcon, Zap } from 'lucide-react'
 import TagLine from '../Extra/TagLine'
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "motion/react";
@@ -11,14 +11,37 @@ const FirstLook = () => {
         <>
 
             <motion.div
-
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 1 }}
                 className="relative h-[36rem] bg-transparent flex justify-center overflow-hidden mt-4">
+                <motion.div
+                    initial={{ y: 20 }}
+                    animate={{ y: 0 }}
+                    transition={{
+                        repeat: Infinity,
+                        repeatType: "reverse", // makes it bounce back
+                        duration: 2 // adjust for speed
+                    }}
+                    className="absolute h-32 w-32 border-2 border-white border-solid top-10 left-10 -rotate-12 rounded-xl flex justify-center items-center bg-white/70 shadow-[0px_5px_15px_rgba(255,255,255,0.35)]  ">
+                    <Zap className="w-16 h-16 text-[#50C878]" fill='#50C878' />
+                </motion.div>
+
+                <motion.div
+                      initial={{ y: 20 }}
+                      animate={{ y: 0 }}
+                      transition={{
+                          repeat: Infinity,
+                          repeatType: "reverse", // makes it bounce back
+                          duration: 2 // adjust for speed
+                      }}
+                className="absolute h-32 w-32 border-2 border-white border-solid bottom-10 right-10 rotate-6 rounded-xl flex justify-center items-center bg-white/70 shadow-[0px_5px_15px_rgba(255,255,255,0.35)] ">
+                    <BrainCircuit className="w-16 h-16 text-[#50C878]" fill='#50C878' />
+                </motion.div>
+
                 <BackgroundCellCore />
 
-                <div className="relative z-50 mt-40 pointer-events-none select-none">
+                <div className="relative z-50 mt-40 pointer-events-auto select-none">
                     <div
                         className='w-full  flex flex-col    mt-4 rounded-md relative items-center justify-center'>
                         <div className='bg-white/40 p-2  flex gap-4 text-white
@@ -34,7 +57,7 @@ const FirstLook = () => {
                         </div>
                         <TagLine />
 
-                        <div className='flex items-center justify-center w-56 h-12 mt-9 rounded-xl border border-emerald-700 bg-gradient-to-b from-emerald-500 to-brand text-base font-semibold text-white cursor-pointer group'>
+                        <div className='flex items-center justify-center w-56 h-12 mt-9 rounded-xl border border-emerald-700 bg-gradient-to-b from-emerald-500 to-brand text-base font-semibold text-white cursor-pointer group z-50 pointer-events-auto'>
                             Get started - it&apos;s free
                             <span className='group-hover:translate-x-2  duration-100'>
                                 <ArrowRight />
@@ -168,7 +191,7 @@ const AnimatedCell = ({
 
     return (
         <div
-            className={cn("bg-transparent border-l border-b border-neutral-600", cellClassName)}
+            className={cn("bg-transparent border-l border-b border-green-400", cellClassName)}
             onClick={() => setClickedCell([rowIdx, colIdx])}
         >
             <motion.div
