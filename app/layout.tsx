@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import WalletProvider from '@/components/Providers/WalletProviderWrapper'
 import "./globals.css";
 import Navbar from "@/components/custom/Navbar";
+import Footer from "@/components/custom/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
 
               {children}
 
+              <Footer/>
             </div>
           </div>
         </WalletProvider>

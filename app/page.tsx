@@ -99,7 +99,6 @@ export default function Home() {
       </Suspense>
       <HeaderComponent text="Pricing" className="w-full flex justify-center items-center text-white/45 font-semibold my-4 mb-4" />
       <Pricing/>
-        <div className="mt-5">Manash</div>
     </>
   );
 }
