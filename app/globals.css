@@ -148,3 +148,24 @@
 .no-visible-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+
+:root {
+  --wallet-btn-bg: transparent;
+  --wallet-btn-color: white;
+  --wallet-btn-hover-bg: #348f57; /* Tailwind's green-800 */
+}
+
+.wallet-adapter-button {
+  background-color: var(--wallet-btn-bg) !important;
+  color: var(--wallet-btn-color) !important;
+  border-radius: 0.375rem !important; /* rounded-md */
+  padding: 0.5rem 0.5rem !important;    /* px-4 py-2 */
+  font-size: 0.875rem !important;     /* text-sm */
+  font-weight: 600 !important;
+  transition: background 0.3s ease;
+}
+
+.wallet-adapter-button:hover {
+  background-color: var(--wallet-btn-hover-bg) !important;
+}
