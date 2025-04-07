@@ -5,8 +5,6 @@ import React, { useState } from 'react'
 import { motion } from "motion/react"
 import { TowerControl } from 'lucide-react';
 import {
-    WalletModalProvider,
-    WalletDisconnectButton,
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 
