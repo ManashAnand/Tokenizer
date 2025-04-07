@@ -6,7 +6,7 @@ import { CircleDot } from "lucide-react";
 import FirstLook from "@/components/custom/FirstLook";
 import { FeaturesSection } from "../components/custom/FeatureSection";
 import { HeaderComponent } from "@/components/custom/HeaderComponent";
-import { Pricing } from "@/components/custom/Pricing";
+import Pricing from "@/components/custom/Pricing";
 
 const MapSection = lazy(() => import("@/components/custom/MapSection"));
 
@@ -97,20 +97,9 @@ export default function Home() {
         <HeaderComponent text="We are present everywhere" className="w-full flex justify-center items-center text-white/45 font-semibold my-4 mb-4" />
         <MapSection dots={dots} lineColor="#228B22" />
       </Suspense>
-      <Pricing
-        tabs={[
-          {
-            title: "First Tab",
-            value: "Manash",
-            content: <div>This is the content for Manash</div>,
-          },
-          {
-            title: "Second Tab",
-            value: "second",
-            content: "Plain string or JSX",
-          },
-        ]}
-      />
+      <HeaderComponent text="Pricing" className="w-full flex justify-center items-center text-white/45 font-semibold my-4 mb-4" />
+      <Pricing/>
+        <div>Manash</div>
     </>
   );
 }
