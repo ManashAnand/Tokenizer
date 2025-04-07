@@ -33,7 +33,7 @@ const Navbar = () => {
 
             animate={{ y: 0, boxShadow: " rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset" }}
             transition={{ duration: 0.7 }}
-            className=' flex w-full justify-between rounded-md bg-white/30 backdrop-blur-md min-h-12 items-center text-white
+            className='relative z-50 isolate flex w-full justify-between rounded-md bg-white/30 backdrop-blur-md min-h-12 items-center text-white
     px-4 mt-4
 '>
             <div className=' flex-1 md:min-w-0 flex text-md md:text-2xl gap-2  items-center'><TowerControl className='' /> Tokenizer</div>
@@ -74,7 +74,7 @@ const Navbar = () => {
                     })
                 }
             </div>
-            <div className="flex gap-2 ml-2">
+            <div className="flex gap-2 ml-2   relative z-50 isolate">
                 <WalletMultiButton className="!bg-transparent !hover:bg-green-800 !text-white !rounded-md !px-4 !py-2 !text-sm !font-semibold transition z-50 pointer-events-auto " />
             </div>
 
