@@ -1,5 +1,5 @@
 "use client";
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 
 const Pricing = () => {
@@ -52,7 +52,7 @@ const Pricing = () => {
   return (
     <div className="flex justify-center items-center">
 
-      <div className="grid mt-5 grid-cols-1 md:grid-cols-3 gap-2 ">
+      <div className="grid mt-16 grid-cols-1 xl:grid-cols-3 gap-2 ">
         {plans.map((plan, index) => (
           <Card key={index} {...plan}  />
         ))}
@@ -89,16 +89,40 @@ const Card = ({
 }: CardProps) => {
   const xPositions = [-20, 0, 20];
   const yPositions = [20, 0, 20];
+
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsLargeScreen(window.innerWidth >= 768); // md = 768px
+    };
+
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
   return (
     <motion.div
-    initial={{
-      x: xPositions[index] ?? 0,
-      y: yPositions[index] ?? 0,
-    }}
-    whileInView={{ x: 0, y: 0 }}
-    transition={{duration:0.7}}
-    viewport={{ once: false, amount: 0.5 }} 
-    style={{ boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.35)" }} className={`h-full p-6 rounded-lg border-2 ${popular ? "border-emerald-500" : "border-white/15"} text-white/45 flex flex-col relative overflow-hidden min-w-md`}>
+    initial={
+      isLargeScreen
+        ? {
+            x: xPositions[index] ?? 0,
+            y: yPositions[index] ?? 0,
+          }
+        : {}
+    }
+    whileInView={
+      isLargeScreen
+        ? {
+            x: 0,
+            y: 0,
+          }
+        : {}
+    }
+    transition={{ duration: 0.7 }}
+    viewport={{ once: false, amount: 0.5 }}
+    style={{ boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.35)" }} className={`h-full p-6 rounded-lg border-2 ${popular ? "border-emerald-500 xl:scale-y-125" : "border-white/15"} text-white/45 flex flex-col relative overflow-hidden md:min-w-md `}>
       {popular && (
         <span className="bg-emerald-500 text-white px-3 py-1 tracking-widest text-xs absolute right-0 top-0 rounded-bl">
           POPULAR
@@ -113,7 +137,7 @@ const Card = ({
       </h1>
 
       {features.map((feature, index) => (
-        <p key={index} className="flex items-center text-gray-600 mb-2">
+        <p key={index} className="flex items-center text-gray-300 mb-2">
           <span className="w-4 h-4 mr-2 inline-flex items-center justify-center bg-gray-400 text-white rounded-full flex-shrink-0">
             <svg
               fill="none"
@@ -146,7 +170,7 @@ const Card = ({
         </svg>
       </button>
 
-      {description && <p className="text-xs text-gray-500 mt-3">{description}</p>}
+      {description && <p className="text-xs text-gray-300 mt-3">{description}</p>}
     </motion.div>
   );
 };
