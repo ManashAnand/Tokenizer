@@ -27,7 +27,10 @@ export default function WalletProviderWraaper({
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <WalletModalProvider>
+
+          {children}
+        </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );
