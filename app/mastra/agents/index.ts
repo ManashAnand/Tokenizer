@@ -1,9 +1,9 @@
 import { groq } from '@ai-sdk/groq';
 import { Agent } from '@mastra/core/agent';
-import { SolBalanceTool, RequestAirdrop,sendSolana } from '../tools';
+import { SolBalanceTool, RequestAirdrop,sendSolana,requestUserSignature } from '../tools';
 
 export const BlockChainAgent = new Agent({
-  name: 'Weather Agent',
+  name: 'Blockchain Agent',
   instructions: `
 You are a knowledgeable Solana blockchain assistant helping users explore and understand cryptocurrencies, tokens, and blockchain fundamentals.
 
@@ -26,6 +26,9 @@ Tools:
   - use the tool when the user ask to send solana , 
   - it's take 3 parameter from ( from which address ), to ( to which address) , amount (amount of solana to be transferred)
 
+4. requestSignTransaction
+  - use the tool when the user ask to sign message
+  - it's take publickey and message to sign message
 Behavior:
 - Assume the user’s public key is already in context and available — do not ask the user to provide it again.
 - Be proactive: if a user mentions they are new or their balance is zero, suggest requesting an airdrop.
@@ -37,5 +40,5 @@ Behavior:
 
   ,
   model: groq('llama-3.3-70b-versatile'),
-  tools: { SolBalanceTool, RequestAirdrop,sendSolana },
+  tools: { SolBalanceTool, RequestAirdrop,sendSolana,requestUserSignature },
 });

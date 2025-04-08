@@ -1,5 +1,4 @@
 import { createTool } from "@mastra/core/tools";
-
 import { Connection, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { z } from "zod";
  
@@ -37,6 +36,20 @@ export const RequestAirdrop = createTool({
     };
   },
 });
+
+export const requestUserSignature = createTool({
+  id: "RequestUserSignature",
+  inputSchema: z.object({
+    publicKey: z.string(),
+    reason: z.string(),
+  }),
+  description: `Return a message string that the user should sign.`,
+  execute: async ({ context: { publicKey, reason } }) => {
+    const message = `Please sign this message to confirm your identity. Reason: ${reason}. PublicKey: ${publicKey}`;
+    return { message };
+  },
+});
+
 
 export const sendSolana = createTool({
   id: "Send Solana Transaction",
