@@ -6,9 +6,15 @@ import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useWallet } from "@solana/wallet-adapter-react"
 
 export default function ChatPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat()
+  const wallet = useWallet();
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    body: {
+      publicKey: wallet.publicKey,
+    }
+  })
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll to bottom when messages change
