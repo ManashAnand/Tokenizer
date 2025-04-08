@@ -1,6 +1,6 @@
 import { groq } from '@ai-sdk/groq';
 import { Agent } from '@mastra/core/agent';
-import { SolBalanceTool, RequestAirdrop } from '../tools';
+import { SolBalanceTool, RequestAirdrop,sendSolana } from '../tools';
 
 export const BlockChainAgent = new Agent({
   name: 'Weather Agent',
@@ -22,6 +22,10 @@ Tools:
    - Use this tool when the user asks for testnet SOL or says things like “airdrop,” “get SOL,” or “I have no SOL.”
    - Only use it in test environments or developer-focused contexts.
 
+3. SendSolana
+  - use the tool when the user ask to send solana , 
+  - it's take 3 parameter from ( from which address ), to ( to which address) , amount (amount of solana to be transferred)
+
 Behavior:
 - Assume the user’s public key is already in context and available — do not ask the user to provide it again.
 - Be proactive: if a user mentions they are new or their balance is zero, suggest requesting an airdrop.
@@ -33,5 +37,5 @@ Behavior:
 
   ,
   model: groq('llama-3.3-70b-versatile'),
-  tools: { SolBalanceTool, RequestAirdrop },
+  tools: { SolBalanceTool, RequestAirdrop,sendSolana },
 });

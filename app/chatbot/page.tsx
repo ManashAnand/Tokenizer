@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/app/lib/utils";
 import { useChat } from "@ai-sdk/react"
-import { useWallet } from "@solana/wallet-adapter-react";
-
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { Transaction } from "@solana/web3.js";
+import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 
 const Chatbot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -17,18 +18,74 @@ const Chatbot = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const wallet = useWallet();
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    body: {
-      publicKey: wallet.publicKey,
-    }
-  })
+  const { connection } = useConnection();
 
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    append
+  } = useChat({
+    body: {
+      publicKey: wallet.publicKey?.toBase58(),
+    },
+    onFinish: async (message) => {
+      const txMatch = message.content.match(/([A-Za-z0-9+/=]{100,})/);
+      const base64Tx = txMatch?.[1];
+      if (!base64Tx) return;
+
+      try {
+        if (!wallet) {
+          throw new WalletNotConnectedError();
+        }
+
+        const txBuffer = Buffer.from(base64Tx, 'base64');
+        const transaction = Transaction.from(txBuffer);
+
+        // Sign the transaction
+        try {
+          // @ts-expect-error signing the transaction
+          const signedTx = await wallet.signTransaction(transaction);
+
+          // Send the transaction
+          const rawTx = signedTx.serialize();
+          const signature = await connection.sendRawTransaction(rawTx);
+          await connection.confirmTransaction(signature, 'confirmed');
+
+          console.log('✅ Transaction confirmed:', signature);
+          append({
+            id: Math.random().toString(), // unique id
+            role: 'assistant', // or 'user', 'system'
+            content: 'Your transaction is confirmed.',
+          })
+        } catch (error) {
+          append({
+            id: Math.random().toString(), // unique id
+            role: 'assistant', // or 'user', 'system'
+            content: 'Rejected the request by the user with error.'+error,
+          })
+        }
+
+      } catch (e) {
+        console.error('❌ Transaction failed:', e);
+        append({
+          id: Math.random().toString(), // unique id
+          role: 'assistant', // or 'user', 'system'
+          content: 'Tranasaction failed due to some technincal error, No token will be dudcted.',
+        })
+      }
+    },
+  });
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+
 
   // Check if scroll button should be shown
   useEffect(() => {
@@ -49,7 +106,7 @@ const Chatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  
+
 
   return (
     <div className="flex items-center justify-center w-full mt-5">
@@ -69,7 +126,7 @@ const Chatbot = () => {
           </div>
 
           {/* Messages container */}
-          <div 
+          <div
             className="h-[60vh] overflow-y-auto p-6 bg-gradient-to-b from-teal-700/30 to-emerald-600/20 backdrop-blur-md"
             ref={messagesContainerRef}
           >
@@ -105,22 +162,44 @@ const Chatbot = () => {
                           "max-w-[85%] rounded-2xl px-5 py-3 shadow-lg",
                           message.role === "user"
                             ? "bg-white/10 text-white backdrop-blur-sm border border-white/10 rounded-tr-none"
-                            : "bg-emerald-500/90 backdrop-blur-md text-white rounded-tl-none border border-emerald-400/30"
+                            : "bg-emerald-500/90 backdrop-blur-md text-white rounded-tl-none border border-emerald-400/30 overflow-hidden"
                         )}
                       >
                         {message.parts && message.parts.length > 0 ? (
                           message.parts.map((part, i) => {
                             if (part.type === "text") {
                               return (
-                                <div key={`${message.id}-${i}`} className="whitespace-pre-wrap">
-                                  {part.text}
+                                <div key={`${message.id}-${i}`} className="flex group gap-4 whitespace-pre-wrap">
+                                  <div className="flex-1">{part.text}</div>
+                                  {message.role === "assistant" && (
+                                    <button
+                                      onClick={() => navigator.clipboard.writeText(part.text)}
+                                      className=" top-2 right-0 opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-white/20 hover:bg-white/30 group-hover:flex hidden text-white px-2 py-1 rounded-md cursor-pointer"
+                                      title="Copy"
+                                    >
+                                      Copy
+                                    </button>
+                                  )}
                                 </div>
                               );
                             }
                             return null;
                           })
                         ) : (
-                          <div className="whitespace-pre-wrap">{message.content}</div>
+                          <>
+                            <div className="relative group whitespace-pre-wrap">
+                              <div>{message.content}</div>
+                              {message.role === "assistant" && (
+                                <button
+                                  onClick={() => navigator.clipboard.writeText(message.content)}
+                                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded-md cursor-pointer z-50"
+                                  title="Copy"
+                                >
+                                  Copy
+                                </button>
+                              )}
+                            </div>
+                          </>
                         )}
                       </motion.div>
                     </motion.div>
@@ -156,10 +235,10 @@ const Chatbot = () => {
                 className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400 focus:ring-emerald-400"
                 disabled={isLoading}
               />
-              <Button 
-                type="submit" 
-                className="bg-emerald-500 hover:bg-emerald-600 transition-all" 
-                size="icon" 
+              <Button
+                type="submit"
+                className="bg-emerald-500 hover:bg-emerald-600 transition-all"
+                size="icon"
                 disabled={isLoading}
               >
                 {isLoading ? (

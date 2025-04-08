@@ -1,6 +1,6 @@
 import { createTool } from "@mastra/core/tools";
 
-import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import { Connection, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { z } from "zod";
  
 
@@ -35,6 +35,50 @@ export const RequestAirdrop = createTool({
       publicKey,
       isSuccessfull: await requestSolDrop(publicKey,amount),
     };
+  },
+});
+
+export const sendSolana = createTool({
+  id: "Send Solana Transaction",
+  inputSchema: z.object({
+    from: z.string(),
+    to: z.string(),
+    amount: z.number(),
+  }),
+  description: `Create a SOL transfer transaction from a given public key to a recipient. Returns a serialized transaction.`,
+  execute: async ({ context: { from,to,amount } }) => {
+    try {
+      const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+
+      const fromPubkey = new PublicKey(from);
+      const toPubkey = new PublicKey(to);
+  
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey,
+          toPubkey,
+          lamports: amount * 1e9, // SOL to lamports
+        })
+      );
+  
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = fromPubkey;
+  
+       // Return base64-encoded transaction (still unsigned)
+       const serializedTx = transaction.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      });
+  
+      return {
+        tx: serializedTx.toString("base64"),
+      };
+  
+    } catch (error) {
+      console.log(error)
+    }
+   
   },
 });
 
