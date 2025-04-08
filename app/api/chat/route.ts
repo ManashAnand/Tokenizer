@@ -1,5 +1,4 @@
 import { mastra } from '@/app/mastra'
-import { NextResponse } from 'next/server'
 
 export const maxDuration = 30;
 
