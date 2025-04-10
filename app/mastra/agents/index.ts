@@ -48,6 +48,9 @@ export const BlockChainAgent = new Agent({
      - Input: 
        - publicKey
        - decimals
+       - name
+       - symbol
+       - uri   
      - Always strat with Token Mint created and append return the mint address in the response .
      - Do not auto-verify — only call "VerifySignMessage" if user explicitly asks to verify it.
 
