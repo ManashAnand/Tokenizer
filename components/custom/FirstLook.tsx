@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
 import { ArrowRight, BrainCircuit, StarsIcon, Zap } from 'lucide-react'
 import TagLine from '../Extra/TagLine'
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "motion/react";
 import { cn } from '@/app/lib/utils'
+import { useRouter } from 'next/navigation';
 
 const FirstLook = () => {
+    const router = useRouter()
     return (
         <>
 
@@ -57,7 +59,9 @@ const FirstLook = () => {
                         </div>
                         <TagLine />
 
-                        <div className='flex items-center justify-center w-56 h-12 mt-9 rounded-xl border border-emerald-700 bg-gradient-to-b from-emerald-500 to-brand text-base font-semibold text-white cursor-pointer group z-50 pointer-events-auto'>
+                        <div className='flex items-center justify-center w-56 h-12 mt-9 rounded-xl border border-emerald-700 bg-gradient-to-b from-emerald-500 to-brand text-base font-semibold text-white cursor-pointer group z-50 pointer-events-auto'
+                            onClick={() => router.push('/chatbot')}
+                        >
                             Get started - it&apos;s free
                             <span className='group-hover:translate-x-2  duration-100'>
                                 <ArrowRight />
