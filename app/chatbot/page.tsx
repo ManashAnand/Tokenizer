@@ -11,6 +11,7 @@ import { useChat } from "@ai-sdk/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Transaction } from "@solana/web3.js";
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
+import { handleMessageSigning, handleTransactionSigning } from "@/components/helper/mastra-helper";
 
 const Chatbot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -34,79 +35,16 @@ const Chatbot = () => {
     onFinish: async (message) => {
       console.log(message)
       if (message.content.startsWith("Please sign the message")) {
-        console.log("Starting siging")
-        const textToSign = message.content;
-
-        if (!wallet.signMessage) {
-          console.error("Wallet does not support signMessage");
-          return;
-        }
-
-        try {
-          const encoded = new TextEncoder().encode(textToSign);
-          const signature = await wallet.signMessage(encoded);
-
-          // console.log("User signature (base64):", Buffer.from(signature).toString("base64"));
-          append({
-            id: Math.random().toString(), // unique id
-            role: 'assistant', // or 'user', 'system'
-            content: 'Your message has been signed.\n'+Buffer.from(signature).toString("base64"),
-          })
-          // Optionally send it to your backend to verify
-        } catch (err) {
-          console.error("User declined to sign:", err);
-          append({
-            id: Math.random().toString(), // unique id
-            role: 'assistant', // or 'user', 'system'
-            content: 'Not able to sign the message.',
-          })
-        }
+        await handleMessageSigning(wallet, message.content, append);
       } else {
         const txMatch = message.content.match(/([A-Za-z0-9+/=]{100,})/);
 
 
         const base64Tx = txMatch?.[1];
         if (!base64Tx) return;
+        await handleTransactionSigning(wallet, message.content, connection, append);
 
-        try {
-          if (!wallet) {
-            throw new WalletNotConnectedError();
-          }
-
-          const txBuffer = Buffer.from(base64Tx, 'base64');
-          const transaction = Transaction.from(txBuffer);
-
-          // Sign the transaction
-          try {
-            // @ts-expect-error signing the transaction
-            const signedTx = await wallet.signTransaction(transaction);
-            // Send the transaction
-            const rawTx = signedTx.serialize();
-            const signature = await connection.sendRawTransaction(rawTx);
-            await connection.confirmTransaction(signature, 'confirmed');
-
-            console.log('✅ Transaction confirmed:', signature);
-            append({
-              id: Math.random().toString(), // unique id
-              role: 'assistant', // or 'user', 'system'
-              content: 'Your transaction is confirmed.',
-            })
-          } catch (error) {
-            append({
-              id: Math.random().toString(), // unique id
-              role: 'assistant', // or 'user', 'system'
-              content: 'Rejected the request by the user with error.' + error,
-            })
-          }
-
-        } catch (e) {
-          console.error('❌ Transaction failed:', e);
-          append({
-            id: Math.random().toString(), // unique id
-            role: 'assistant', // or 'user', 'system'
-            content: 'Tranasaction failed due to some technincal error, No token will be dudcted.',
-          })
-        }
+       
       }
 
     },

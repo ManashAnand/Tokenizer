@@ -170,6 +170,10 @@
   background-color: var(--wallet-btn-hover-bg) !important;
 }
 
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+}
 
 ::-webkit-scrollbar-track {
   background: rgba(13, 148, 136, 0.2); /* emerald-600/20 */
