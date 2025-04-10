@@ -1,42 +1,64 @@
 import { createTool } from "@mastra/core/tools";
-import { Connection, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { z } from "zod";
 import { ed25519 } from "@noble/curves/ed25519";
+import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMint2Instruction, getMinimumBalanceForRentExemptMint } from "@solana/spl-token"
 
 // const connection = new Connection("https://api.devnet.solana.com", "confirmed");
 const connection = new Connection("https://solana-devnet.g.alchemy.com/v2/WZGZh0l4J0d9GjkF08a-YraJSKGyvj5W", "confirmed");
 
-export const SolBalanceTool = createTool({
-  id: "Get Solana balance",
+
+export const createMintTool = createTool({
+  id: "Create Mint",
   inputSchema: z.object({
     publicKey: z.string(),
+    decimals: z.number(),
   }),
-  description: `Fetches the balance of solana address using public key`,
-  execute: async ({ context: { publicKey } }) => {
-    console.log("Using tool to fetch sol balance for", publicKey);
-    return {
-      publicKey,
-      currentBalance: await getSolBalance(publicKey),
-    };
+  description: `Create a new mint on Solana`,
+  execute: async ({ context: { publicKey, decimals } }) => {
+    try {
+      const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+
+      const mintKeypair = Keypair.generate();
+
+      
+      const lamports = await getMinimumBalanceForRentExemptMint(connection);
+      const transaction = new Transaction().add(
+        SystemProgram.createAccount({
+          fromPubkey: new PublicKey(publicKey),
+          newAccountPubkey: mintKeypair.publicKey,
+          space: MINT_SIZE,
+          lamports,
+          programId: TOKEN_PROGRAM_ID,
+        }),
+        createInitializeMint2Instruction(mintKeypair.publicKey, decimals, new PublicKey(publicKey), new PublicKey(publicKey), TOKEN_PROGRAM_ID)
+      );
+
+
+      transaction.feePayer = new PublicKey(publicKey);
+      transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+      transaction.partialSign(mintKeypair);
+
+
+      const serializedTx = transaction.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      });
+
+      console.log(`Token mint created at ${mintKeypair.publicKey.toBase58()}`);
+      return {
+        tx: serializedTx.toString("base64"),
+        mintPubkey: mintKeypair.publicKey.toBase58(),
+      };
+    } catch (error) {
+      console.log(error)
+      return {
+        error: error,
+      };
+    }
+
   },
 });
-
-export const RequestAirdrop = createTool({
-  id: "Request airdrop",
-  inputSchema: z.object({
-    publicKey: z.string(),
-    amount: z.number()
-  }),
-  description: `Request the airdrop on solana address on given public key and for the given amount present in context`,
-  execute: async ({ context: { publicKey, amount } }) => {
-    console.log(`Amount ${amount} to public address ${publicKey}`);
-    return {
-      publicKey,
-      isSuccessfull: await requestSolDrop(publicKey, amount),
-    };
-  },
-});
-
 
 
 
@@ -84,6 +106,41 @@ export const sendSolana = createTool({
   },
 });
 
+export const SolBalanceTool = createTool({
+  id: "Get Solana balance",
+  inputSchema: z.object({
+    publicKey: z.string(),
+  }),
+  description: `Fetches the balance of solana address using public key`,
+  execute: async ({ context: { publicKey } }) => {
+    console.log("Using tool to fetch sol balance for", publicKey);
+    return {
+      publicKey,
+      currentBalance: await getSolBalance(publicKey),
+    };
+  },
+});
+
+export const RequestAirdrop = createTool({
+  id: "Request airdrop",
+  inputSchema: z.object({
+    publicKey: z.string(),
+    amount: z.number()
+  }),
+  description: `Request the airdrop on solana address on given public key and for the given amount present in context`,
+  execute: async ({ context: { publicKey, amount } }) => {
+    console.log(`Amount ${amount} to public address ${publicKey}`);
+    return {
+      publicKey,
+      isSuccessfull: await requestSolDrop(publicKey, amount),
+    };
+  },
+});
+
+
+
+
+
 export const requestUserSignature = createTool({
   id: "RequestUserSignature",
   inputSchema: z.object({
@@ -112,7 +169,7 @@ export const VerifySignMessage = createTool({
       if (signatureBytes.length !== 64) {
         throw new Error(`Invalid signature length: expected 64, got ${signatureBytes.length}`);
       }
-  
+
       const publicKeyBytes = new PublicKey(publicKey).toBytes();
       console.log(messageBytes, signatureBytes, publicKeyBytes)
       const isValid = ed25519.verify(signatureBytes, messageBytes, publicKeyBytes);

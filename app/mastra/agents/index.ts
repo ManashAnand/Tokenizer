@@ -1,6 +1,6 @@
 import { groq } from '@ai-sdk/groq';
 import { Agent } from '@mastra/core/agent';
-import { SolBalanceTool, RequestAirdrop,sendSolana,requestUserSignature,VerifySignMessage } from '../tools';
+import { SolBalanceTool, RequestAirdrop,sendSolana,requestUserSignature,VerifySignMessage,createMintTool } from '../tools';
 
 export const BlockChainAgent = new Agent({
   name: 'Blockchain Agent',
@@ -43,6 +43,14 @@ export const BlockChainAgent = new Agent({
        - message
        - signature
   
+  6. createMintTool
+     - Use when the user wants to create a new mint or token.
+     - Input: 
+       - publicKey
+       - decimals
+     - Always strat with Token Mint created and append return the mint address in the response .
+     - Do not auto-verify — only call "VerifySignMessage" if user explicitly asks to verify it.
+
   💡 Behavior Guidelines:
   - Assume users public key is already known — dont ask for it again.
   - If the user is new or says their balance is 0, suggest using "RequestAirdrop".
@@ -53,5 +61,5 @@ export const BlockChainAgent = new Agent({
   `  
   ,
   model: groq('llama-3.3-70b-versatile'),
-  tools: { SolBalanceTool, RequestAirdrop,sendSolana,requestUserSignature,VerifySignMessage },
+  tools: { SolBalanceTool, RequestAirdrop,sendSolana,requestUserSignature,VerifySignMessage,createMintTool },
 });

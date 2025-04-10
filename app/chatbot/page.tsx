@@ -10,8 +10,10 @@ import { cn } from "@/app/lib/utils";
 import { useChat } from "@ai-sdk/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { handleMessageSigning, handleTransactionSigning } from "@/components/helper/mastra-helper";
+import { Transaction } from "@solana/web3.js";
 
 const Chatbot = () => {
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -31,18 +33,58 @@ const Chatbot = () => {
       publicKey: wallet.publicKey?.toBase58(),
     },
     onFinish: async (message) => {
+      console.log("message is ")
       console.log(message)
+      console.log("transaction hash is")
+      // @ts-expect-error here the result might be undefined
+      console.log(message.toolInvocations?.[0]?.result)
+
+      // Type assertion for the tool result structure
+      // @ts-expect-error here the result might be undefined
+      const toolResult = message.toolInvocations?.[0]?.result as { tx?: string, mintPubkey?: string }; 
+      const base64Tx = toolResult?.tx; // Extract base64 encoded tx
+
       if (message.content.startsWith("Please sign the message")) {
         await handleMessageSigning(wallet, message.content, append);
-      } else {
+      }
+      // Check if the message indicates a mint was created AND we have a base64Tx
+      else if (message.content.startsWith("Token Mint created") && base64Tx) {
+        console.log("Starting transaction sending for token mint.");
+        if (!wallet?.sendTransaction) {
+          console.error("Wallet does not support sendTransaction");
+          append({ id: Math.random().toString(), role: 'assistant', content: 'Wallet cannot send transaction.' });
+          return;
+        }
+      
+        try {
+          // Decode the base64 string and deserialize the transaction
+          const txBuffer = Buffer.from(base64Tx, 'base64');
+          const transaction = Transaction.from(txBuffer);
+          
+          // Send the deserialized transaction
+          const signature = await wallet.sendTransaction(transaction, connection);
+          console.log("Transaction sent, signature:", signature);
+      
+          append({
+            id: Math.random().toString(),
+            role: 'assistant',
+            content: `Token Mint transaction sent successfully! Signature: ${signature}`,
+          });
+        } catch (err) {
+          console.error("User declined or failed to send transaction:", err);
+          append({
+            id: Math.random().toString(),
+            role: 'assistant',
+            content: `Failed to send transaction: ${err instanceof Error ? err.message : String(err)}`,
+          });
+        }
+      }
+      // Fallback for other potential transaction signing scenarios (adjust if needed)
+      else {
         const txMatch = message.content.match(/([A-Za-z0-9+/=]{100,})/);
-
-
         const base64Tx = txMatch?.[1];
         if (!base64Tx) return;
         await handleTransactionSigning(wallet, message.content, connection, append);
-
-       
       }
 
     },

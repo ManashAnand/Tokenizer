@@ -13,6 +13,8 @@
     "@mastra/core": "^0.7.0",
     "@noble/curves": "^1.8.1",
     "@radix-ui/react-slot": "^1.1.2",
+    "@solana/spl-token": "^0.4.13",
+    "@solana/spl-token-metadata": "^0.1.6",
     "@solana/wallet-adapter-base": "^0.9.24",
     "@solana/wallet-adapter-react": "^0.15.36",
     "@solana/wallet-adapter-react-ui": "^0.9.36",
