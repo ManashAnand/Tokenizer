@@ -169,3 +169,19 @@
 .wallet-adapter-button:hover {
   background-color: var(--wallet-btn-hover-bg) !important;
 }
+
+
+::-webkit-scrollbar-track {
+  background: rgba(13, 148, 136, 0.2); /* emerald-600/20 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(5, 150, 105, 0.6); /* emerald-500/60 */
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2); /* subtle border for glow */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(5, 150, 105, 0.8); /* on hover, more vibrant */
+}

@@ -33,7 +33,7 @@ const Chatbot = () => {
     },
     onFinish: async (message) => {
       console.log(message)
-      if (message.content.startsWith("Please sign this message")) {
+      if (message.content.startsWith("Please sign the message")) {
         console.log("Starting siging")
         const textToSign = message.content;
 
