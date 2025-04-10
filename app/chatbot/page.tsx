@@ -9,8 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/app/lib/utils";
 import { useChat } from "@ai-sdk/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Transaction } from "@solana/web3.js";
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { handleMessageSigning, handleTransactionSigning } from "@/components/helper/mastra-helper";
 
 const Chatbot = () => {
