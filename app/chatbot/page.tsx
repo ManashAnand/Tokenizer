@@ -64,6 +64,7 @@ const Chatbot = () => {
           // Send the deserialized transaction
           const signature = await wallet.sendTransaction(transaction, connection);
           console.log("Transaction sent, signature:", signature);
+          console.log("Transaction",transaction)
       
           append({
             id: Math.random().toString(),
@@ -80,11 +81,13 @@ const Chatbot = () => {
         }
       }
       // Fallback for other potential transaction signing scenarios (adjust if needed)
-      else {
-        const txMatch = message.content.match(/([A-Za-z0-9+/=]{100,})/);
+      else if(message.content.startsWith("Sending Solana ")) {
+      // @ts-expect-error here the result might be undefined
+        const tx = message.toolInvocations?.[0]?.result.tx
+        const txMatch = tx.match(/([A-Za-z0-9+/=]{100,})/);
         const base64Tx = txMatch?.[1];
         if (!base64Tx) return;
-        await handleTransactionSigning(wallet, message.content, connection, append);
+        await handleTransactionSigning(wallet, tx, connection, append);
       }
 
     },
@@ -185,7 +188,9 @@ const Chatbot = () => {
                                   {message.role === "assistant" && (
                                     <button
                                       onClick={() => navigator.clipboard.writeText(part.text)}
-                                      className=" top-2 right-0 opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-white/20 hover:bg-white/30 group-hover:flex hidden text-white px-2 py-1 rounded-md cursor-pointer"
+                                      className=" bottom-2 right-0 opacity-0 group-hover:opacity-100 transition-all text-sm bg-white/20 hover:bg-white/30 group-hover:flex hidden text-white px-2 py-1 rounded-md cursor-pointer h-8
+                                      hover:flex justify-center items-center active:scale-75  duration-150
+                                      "
                                       title="Copy"
                                     >
                                       Copy
@@ -203,7 +208,8 @@ const Chatbot = () => {
                               {message.role === "assistant" && (
                                 <button
                                   onClick={() => navigator.clipboard.writeText(message.content)}
-                                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded-md cursor-pointer z-50"
+                                  className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all text-sm bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded-md cursor-pointer z-50 h-8 hover:flex justify-center items-center active:scale-75  duration-150
+"
                                   title="Copy"
                                 >
                                   Copy
