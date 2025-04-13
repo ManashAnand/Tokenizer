@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Tokenizer — AI-Powered Solana Transactions via Chat
 
-## Getting Started
+Ever imagined chatting with an AI and it sends a Solana transaction *for you*?  
+Well, this project makes that happen — in real-time, with real wallets.
 
-First, run the development server:
+## 🚀 Features
+
+- 🤖 AI Agent that builds and serializes Solana transactions  
+- 💬 Chat UI powered by `useChat` (React hooks)  
+- 🔐 Solana wallet integration to sign & send txns  
+- ⚡️ Real-time interaction between AI, wallet, and chain  
+- 🧩 Modular Mastra logic to generate and validate transactions
+
+## 📸 Demo
+
+> Watch the magic in action: [https://x.com/manashanand2/status/1911339161950310552]
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React + TypeScript + TailwindCSS  
+- **Backend**: Node.js + Express (or FastAPI if using Python)  
+- **Blockchain**: Solana Web3.js  
+- **AI Agent**: Custom tool calling backend to prepare txns  using Mastra
+- **Wallet**: Solana wallet adapter (e.g. Phantom)
+
+## 🧠 How It Works
+
+1. User types an intent in chat (e.g., "Send 0.01 SOL to xyz")
+2. Message is sent to the backend
+3. Backend agent parses intent → constructs a Solana transaction
+4. Serialized transaction is returned to frontend
+5. User's wallet signs & sends the transaction
+6. Bot replies with the signature + explorer link 🚀
+
+## 📦 Installation
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
